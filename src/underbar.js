@@ -47,6 +47,9 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
+    for (var i = 0; i < collection.length; i++) {
+      iterator(collection[i], i);
+    }
 
   };
 
@@ -89,7 +92,7 @@
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
     var foundItems = {};
-    return _.filter(array, item => {
+    return _.filter(array, function(item) {
       return !(item in foundItems) && (foundItems[item] = true);
     });
   };
@@ -100,6 +103,11 @@
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+    var results = [];
+    _.each(collection, function(currentValue, currentIndexOrKey, collection) {
+      results.push(iterator(currentValue, currentIndexOrKey, collection));
+    });
+    return results;
   };
 
   /*
@@ -141,6 +149,10 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
+    for (var i = 0; i < collection.length; i++) {
+      accumulator = iterator(accumulator, collection[i]);
+    }
+    return accumulator;
   };
 
   // Determine if the array or object contains a given value (using `===`).
