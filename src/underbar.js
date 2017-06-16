@@ -47,10 +47,15 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
-    for (var i = 0; i < collection.length; i++) {
-      iterator(collection[i], i);
+    if (Array.isArray(collection)) {
+      for (var i = 0; i < collection.length; i++) {
+        iterator(collection[i], i, collection);
+      }
+    } else if (typeof collection === 'object') {
+      for (var key in collection) {
+        iterator(collection[key], key, collection);
+      }
     }
-
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -149,9 +154,14 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-    for (var i = 0; i < collection.length; i++) {
-      accumulator = iterator(accumulator, collection[i]);
-    }
+    _.each(collection, function(currentValue, currentIndexOrKey, collection) {
+      if (accumulator === undefined) {
+        accumulator = currentValue;
+        iterator(accumulator, currentValue, currentIndexOrKey, collection);
+      } else {
+        accumulator = iterator(accumulator, currentValue, currentIndexOrKey, collection);
+      }
+    });
     return accumulator;
   };
 
